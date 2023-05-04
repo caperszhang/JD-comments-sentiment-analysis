@@ -8,8 +8,10 @@ from matplotlib.font_manager import FontProperties
 
 def read_csv():
     '''读取商品评论数据文件'''
-    comment_data = pd.read_csv('jd_comment.csv', encoding='utf-8',
-                               sep='\n', index_col=None)
+   ## comment_data = pd.read_csv('c:\jd_comment.csv', encoding='gbk',
+   ##                            sep='\r', index_col=None)
+    comment_data = pd.read_csv('c:\jd_comment.csv',encoding='gbk')
+    print(comment_data)
     #返回评论作为参数
     return comment_data
 
@@ -19,7 +21,7 @@ def clean_data(data):
     df = data.dropna()  # 消除缺失数据 NaN为缺失数据
     df = pd.DataFrame(df.iloc[:, 0].unique())  # 数据去重
     return df
-    # print('数据清洗后：', len(df))
+    print('数据清洗后：', len(df))
 
 
 def clean_repeat_word(raw_str, reverse=False):
@@ -56,14 +58,15 @@ res_list = []
 
 def test(filename, to_filename):
     '''商品评论-情感分析-测试'''
-    with open(f'{filename}.csv', 'r', encoding='utf-8') as fr:
+    #with open(f'{filename}.csv', 'r', encoding='gbk') as fr:
+    with open(f'{filename}.csv', 'r') as fr:
         for line in fr.readlines():
             s = snownlp.SnowNLP(line)
             #调用snownlp中情感评分s.sentiments
-            if s.sentiments > 0.6:
+            if s.sentiments > 0.1: ###情感分析的算法不准哈。从0.6改为0.1貌似结果好一点
                 res = '喜欢'
                 res_list.append(1)
-            elif s.sentiments < 0.4:
+            elif s.sentiments < 0.01:
                 res = '不喜欢'
                 res_list.append(-1)
             else:
@@ -83,10 +86,14 @@ def test(filename, to_filename):
 
 def data_virtualization():
     '''分析结果可视化，以条形图为测试样例'''
-    font = FontProperties(fname='/System/Library/Fonts/Supplemental/Songti.ttc', size=14)
+    font = FontProperties(fname='C:\Windows\Fonts\simsun.ttc', size=14)
     likes = len([i for i in res_list if i == 1])
     common = len([i for i in res_list if i == 0])
     unlikes = len([i for i in res_list if i == -1])
+
+    ##输出图片的字体乱码，加上这句好了
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 指定SimHei字体
+
 
     plt.bar([1], [likes], label='喜欢')#（坐标，评论长度，名称）
     plt.bar([2], [common], label='一般')
@@ -99,9 +106,11 @@ def data_virtualization():
     plt.legend()#插入图例
     plt.xlabel('评价种类')
     plt.ylabel('评价数目')
-    plt.title(u'商品评论情感分析结果-条形图', FontProperties=font)
+    plt.title(u'商品评论情感分析结果-条形图', fontproperties=font)
     plt.savefig('fig.png')
     plt.show()
+
+
 '''
 def word_cloud_show():
     #将商品评论转为高频词汇的词云
@@ -111,10 +120,10 @@ def word_cloud_show():
 '''
 
 def main():
-     processed_data('processed_comment_data')#数据清洗
+     processed_data('c:\processed_comment_data')#数据清洗
      #train()  # 训练正负向商品评论数据集
 
-     test('jd_comment', 'result')
+     test('c:\jd_comment', 'c:\\result')
 
      print('数据可视化中...')
      data_virtualization()  # 数据可视化
