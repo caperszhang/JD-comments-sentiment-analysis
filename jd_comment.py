@@ -17,7 +17,8 @@ WC_MASK_IMG = 'jdicon.jpg'
 # 评论数据保存文件
 COMMENT_FILE_PATH = 'jd_comment.txt'
 # 词云字体
-WC_FONT_PATH = '/Library/Fonts/Songti.ttc'
+##WC_FONT_PATH = '/Library/Fonts/Songti.ttc'
+WC_FONT_PATH = "C:\Windows\Fonts\msjhl.ttc"
 
 
 def spider_comment(page=0, key=0):
@@ -58,9 +59,9 @@ def batch_spider_comment():
     if os.path.exists(COMMENT_FILE_PATH):
         os.remove(COMMENT_FILE_PATH)
     key = input("Please enter the address:")
-    key = re.sub("\D","",key)
+    key = re.sub("\D","",key)  ##从链接中取出数字的product_id
     #通过range来设定爬取的页面数
-    for i in range(10):
+    for i in range(20):
         spider_comment(i,key)
         # 模拟用户浏览，设置一个爬虫间隔，防止ip被封
         time.sleep(random.random() * 5)
@@ -100,10 +101,11 @@ def create_word_cloud():
 
 
 def txt_change_to_csv():
-    with open('jd_comment.csv', 'w+', encoding="utf8", newline='')as c:
+    #byte_sequence.decode('utf-8', errors='ignore')
+    with open('c:\jd_comment.csv', 'w+', encoding="gbk", newline='')as c:
         writer_csv = csv.writer(c, dialect="excel")
-        with open("jd_comment.txt", 'r', encoding='utf8')as f:
-            # print(f.readlines())
+        with open("jd_comment.txt", 'r', encoding='gbk')as f:
+            #print(f.readlines())
             for line in f.readlines():
                 # 去掉str左右端的空格并以空格分割成list
                 line_list = line.strip('\n').split(',')
